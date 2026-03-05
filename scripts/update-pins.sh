@@ -12,7 +12,11 @@ app_file="$repo_root/nix/packages/openclaw-app.nix"
 config_options_file="$repo_root/nix/generated/openclaw-config-options.nix"
 flake_lock_file="$repo_root/flake.lock"
 
-upstream_main_sha=$(git ls-remote https://github.com/openclaw/openclaw.git refs/heads/main | awk '{print $1}' || true)
+latest_release_tag=$(gh api /repos/openclaw/openclaw/releases?per_page=1 2>/dev/null | jq -r '[.[] | select(.draft | not) | select(.prerelease | not)][0].tag_name // empty' || true)
+upstream_latest_release_sha=""
+if [[ -n "$latest_release_tag" ]]; then
+  upstream_latest_release_sha=$(gh api "/repos/openclaw/openclaw/commits/${latest_release_tag}" --jq '.sha' 2>/dev/null || true)
+fi
 
 log() {
   printf '>> %s\n' "$*"
@@ -75,15 +79,17 @@ openclaw_bump_failed=0
 if (
   set -euo pipefail
 
-  log "Resolving openclaw main SHAs"
-  mapfile -t candidate_shas < <(gh api /repos/openclaw/openclaw/commits?per_page=10 | jq -r '.[].sha' || true)
+  log "Resolving openclaw release SHAs"
+  mapfile -t candidate_shas < <(
+    gh api /repos/openclaw/openclaw/releases?per_page=10 |
+      jq -r '.[] | select(.draft | not) | select(.prerelease | not) | .tag_name' |
+      while read -r tag; do
+        gh api "/repos/openclaw/openclaw/commits/${tag}" --jq '.sha' 2>/dev/null
+      done || true
+  )
   if [[ ${#candidate_shas[@]} -eq 0 ]]; then
-    latest_sha=$(git ls-remote https://github.com/openclaw/openclaw.git refs/heads/main | awk '{print $1}' || true)
-    if [[ -z "$latest_sha" ]]; then
-      echo "Failed to resolve openclaw main SHA" >&2
-      exit 1
-    fi
-    candidate_shas=("$latest_sha")
+    echo "No openclaw releases found" >&2
+    exit 1
   fi
 
   selected_sha=""
@@ -284,8 +290,8 @@ rm -rf "$openclaw_backup_dir" 2>/dev/null || true
 
 if [[ "$openclaw_bump_failed" -eq 1 ]]; then
   current_rev=$(awk -F'"' '/rev =/{print $2}' "$source_file" | head -n 1)
-  if [[ -n "$upstream_main_sha" && -n "$current_rev" && "$current_rev" != "$upstream_main_sha" ]]; then
-    echo "Openclaw bump failed while upstream advanced (${current_rev} -> ${upstream_main_sha}); failing run." >&2
+  if [[ -n "$upstream_latest_release_sha" && -n "$current_rev" && "$current_rev" != "$upstream_latest_release_sha" ]]; then
+    echo "Openclaw bump failed while upstream advanced (${current_rev} -> ${upstream_latest_release_sha}); failing run." >&2
     exit 1
   fi
 fi

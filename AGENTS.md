@@ -54,7 +54,7 @@ OpenClaw packaging:
 
 Golden path for pins (yolo + manual bumps):
 - Hourly GitHub Action **Yolo Update Pins** runs `scripts/update-pins.sh`, which:
-  - Picks latest upstream openclaw SHA with green non-Windows checks
+  - Picks latest upstream openclaw *release* (non-draft, non-prerelease) with green non-Windows checks
   - Rebuilds gateway to refresh `pnpmDepsHash`
   - Regenerates `nix/generated/openclaw-config-options.nix` from upstream schema
   - Updates app pin/hash, commits, rebases, pushes to `main`

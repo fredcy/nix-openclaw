@@ -117,4 +117,15 @@ fi
 
 log_step "validate node_modules symlinks" check_no_broken_symlinks "$out/lib/openclaw/node_modules"
 
+# Stamp build-info.json with the nix-derived version so `openclaw --version` is accurate.
+# OPENCLAW_NIX_VERSION is set from sourceInfo.version in the derivation env.
+if [ -n "${OPENCLAW_NIX_VERSION:-}" ]; then
+  build_info="$out/lib/openclaw/dist/build-info.json"
+  if [ -f "$build_info" ]; then
+    log_step "stamp build-info.json version" \
+      jq --arg v "$OPENCLAW_NIX_VERSION" '.version = $v' "$build_info" > "${build_info}.tmp" \
+      && mv "${build_info}.tmp" "$build_info"
+  fi
+fi
+
 bash -e -c '. "$STDENV_SETUP"; makeWrapper "$NODE_BIN" "$out/bin/openclaw" --add-flags "$out/lib/openclaw/dist/index.js" --set-default OPENCLAW_NIX_MODE "1"'

@@ -34,14 +34,16 @@
 }:
 
 let
-  sourceFetch = lib.removeAttrs sourceInfo [ "pnpmDepsHash" ];
+  sourceFetch = lib.removeAttrs sourceInfo [ "pnpmDepsHash" "version" ];
 
   # Prefer nixpkgs' platform mapping instead of hand-rolled arch/platform.
   pnpmPlatform = stdenv.hostPlatform.node.platform;
   pnpmArch = stdenv.hostPlatform.node.arch;
 
   revShort = lib.substring 0 8 sourceInfo.rev;
-  version = "unstable-${revShort}";
+  # Use explicit version from sourceInfo when pinned at a tagged release;
+  # fall back to unstable-<hash> for inter-release commits.
+  version = sourceInfo.version or "unstable-${revShort}";
 
   resolvedSrc =
     if src != null then
@@ -66,6 +68,8 @@ let
   };
 
   envBase = {
+    # Passed to gateway-install.sh to stamp build-info.json with the correct version.
+    OPENCLAW_NIX_VERSION = version;
     npm_config_arch = pnpmArch;
     npm_config_platform = pnpmPlatform;
     PNPM_CONFIG_MANAGE_PACKAGE_MANAGER_VERSIONS = "false";

@@ -31,24 +31,37 @@ upstream_checks_green() {
     return 1
   fi
 
+  # Allowlist: only require checks that matter for the nix gateway build.
+  # Everything else (extensions, bun runner, channels, npm publish, deploy) is
+  # either irrelevant or redundant with the node test suite.
+  local required_pattern='checks \(node, test,|build-smoke|install-smoke|build-amd64|build-arm64|^check$|^check-additional$'
+
+  local required_runs
+  required_runs=$(printf '%s' "$checks_json" | jq --arg pat "$required_pattern" '[.check_runs[] | select(.name | test($pat))]')
+
   local relevant_count
-  relevant_count=$(printf '%s' "$checks_json" | jq '[.check_runs[] | select(.name | test("windows"; "i") | not)] | length')
+  relevant_count=$(printf '%s' "$required_runs" | jq 'length')
   if [[ "$relevant_count" -eq 0 ]]; then
-    log "No non-windows check runs found for $sha"
+    log "No required check runs found for $sha (pattern: $required_pattern)"
     return 1
   fi
 
   local failing_count
   failing_count=$(
-    printf '%s' "$checks_json" | jq '[.check_runs[]
-      | select(.name | test("windows"; "i") | not)
+    printf '%s' "$required_runs" | jq '[.[]
       | select(.status != "completed" or (.conclusion != "success" and .conclusion != "skipped"))
     ] | length'
   )
   if [[ "$failing_count" -ne 0 ]]; then
-    log "Non-windows checks not green for $sha"
+    local failing_names
+    failing_names=$(printf '%s' "$required_runs" | jq -r '[.[]
+      | select(.status != "completed" or (.conclusion != "success" and .conclusion != "skipped"))
+      | "\(.name) (\(.conclusion // .status))"] | join(", ")')
+    log "Required checks not green for $sha: $failing_names"
     return 1
   fi
+
+  log "All $relevant_count required checks passed for $sha"
 
   return 0
 }

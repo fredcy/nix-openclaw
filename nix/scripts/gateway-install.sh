@@ -29,10 +29,11 @@ check_no_broken_symlinks() {
     [ -e "$link" ] || printf '%s\n' "$link"
   done > "$broken_tmp"
   if [ -s "$broken_tmp" ]; then
-    echo "dangling symlinks found under $root" >&2
+    echo "removing dangling symlinks under $root:" >&2
     cat "$broken_tmp" >&2
-    rm -f "$broken_tmp"
-    return 1
+    while IFS= read -r link; do
+      rm -f "$link"
+    done < "$broken_tmp"
   fi
   rm -f "$broken_tmp"
 }

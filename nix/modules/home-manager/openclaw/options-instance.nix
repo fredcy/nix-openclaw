@@ -37,6 +37,12 @@
       description = "Path to generated OpenClaw config JSON.";
     };
 
+    manageConfig = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Whether nix generates and symlinks openclaw.json. Set false to manage the config file manually (via config.patch, plugins install, control UI, etc).";
+    };
+
     logPath = lib.mkOption {
       type = lib.types.str;
       default =

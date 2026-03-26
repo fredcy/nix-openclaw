@@ -171,12 +171,13 @@ let
       package = gatewayPackage;
     in
     {
-      homeFile = {
+      homeFile = lib.optionalAttrs inst.manageConfig {
         name = openclawLib.toRelative inst.configPath;
         value = {
           text = configJson;
         };
       };
+      manageConfig = inst.manageConfig;
       configFile = configFile;
       configPath = inst.configPath;
 
@@ -266,7 +267,7 @@ in
     );
 
     home.file = lib.mkMerge [
-      (lib.listToAttrs (map (item: item.homeFile) instanceConfigs))
+      (lib.listToAttrs (lib.filter (item: item != {}) (map (item: item.homeFile) instanceConfigs)))
       (lib.optionalAttrs (pkgs.stdenv.hostPlatform.isDarwin && appPackage != null && cfg.installApp) {
         "Applications/OpenClaw.app" = {
           source = "${appPackage}/Applications/OpenClaw.app";
@@ -306,7 +307,7 @@ in
       ${lib.concatStringsSep "\n" (
         map (
           item: "run --quiet ${lib.getExe' pkgs.coreutils "ln"} -sfn ${item.configFile} ${item.configPath}"
-        ) instanceConfigs
+        ) (lib.filter (item: item.manageConfig) instanceConfigs)
       )}
     '';
 

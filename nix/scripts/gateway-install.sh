@@ -44,9 +44,10 @@ mkdir -p "$out/lib/openclaw" "$out/bin"
 log_step "move build outputs" mv dist node_modules package.json "$out/lib/openclaw/"
 if [ -d extensions ]; then
   log_step "copy extensions" cp -r extensions "$out/lib/openclaw/"
-  # Copy plugin manifests from source extensions to dist/extensions (compiled JS only lacks manifests)
+  # Copy plugin manifests and package.json from source extensions to dist/extensions
+  # (compiled JS only lacks manifests; channel metadata lives in package.json)
   if [ -d "$out/lib/openclaw/dist/extensions" ]; then
-    log_step "copy extension manifests to dist" find extensions -name 'openclaw.plugin.json' -exec sh -c '
+    log_step "copy extension manifests to dist" find extensions \( -name 'openclaw.plugin.json' -o -name 'package.json' \) -exec sh -c '
       for f do
         dir=$(dirname "$f" | sed "s|^extensions/||")
         dest="$out/lib/openclaw/dist/extensions/$dir"

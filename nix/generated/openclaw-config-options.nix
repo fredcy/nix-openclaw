@@ -1,4 +1,4 @@
-# Generated from upstream OpenClaw schema at rev 213a704b71f4996dc82a583288ee53785215f627. DO NOT EDIT.
+# Generated from upstream OpenClaw schema at rev da64a978e5814567f7797cc34fbe29b61b7eae7a. DO NOT EDIT.
 # Generator: nix/scripts/generate-config-options.ts
 { lib }:
 let
@@ -984,6 +984,10 @@ in
           default = null;
         };
       }; }));
+        default = null;
+      };
+      params = lib.mkOption {
+        type = t.nullOr (t.attrsOf (t.anything));
         default = null;
       };
       pdfMaxBytesMb = lib.mkOption {
@@ -2742,6 +2746,10 @@ in
         type = t.nullOr (t.int);
         default = null;
       };
+      rateLimitedProfileRotations = lib.mkOption {
+        type = t.nullOr (t.int);
+        default = null;
+      };
     }; });
       default = null;
     };
@@ -3960,6 +3968,15 @@ in
     };
     trustedProxies = lib.mkOption {
       type = t.nullOr (t.listOf (t.str));
+      default = null;
+    };
+    webchat = lib.mkOption {
+      type = t.nullOr (t.submodule { options = {
+      chatHistoryMaxChars = lib.mkOption {
+        type = t.nullOr (t.int);
+        default = null;
+      };
+    }; });
       default = null;
     };
   }; });

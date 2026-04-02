@@ -1,4 +1,4 @@
-# Generated from upstream OpenClaw schema at rev da64a978e5814567f7797cc34fbe29b61b7eae7a. DO NOT EDIT.
+# Generated from upstream OpenClaw schema at rev d74a12264aa5fb0598605e8f04e1864b7239ddd5. DO NOT EDIT.
 # Generator: nix/scripts/generate-config-options.ts
 { lib }:
 let
@@ -346,6 +346,10 @@ in
         };
         model = lib.mkOption {
           type = t.nullOr (t.str);
+          default = null;
+        };
+        notifyUser = lib.mkOption {
+          type = t.nullOr (t.bool);
           default = null;
         };
         postCompactionSections = lib.mkOption {
@@ -7184,6 +7188,10 @@ in
           type = t.nullOr (t.int);
           default = null;
         };
+        provider = lib.mkOption {
+          type = t.nullOr (t.str);
+          default = null;
+        };
         readability = lib.mkOption {
           type = t.nullOr (t.bool);
           default = null;
@@ -7285,40 +7293,6 @@ in
       };
       x_search = lib.mkOption {
         type = t.nullOr (t.submodule { options = {
-        apiKey = lib.mkOption {
-          type = t.nullOr (t.oneOf [ (t.str) (t.oneOf [ (t.submodule { options = {
-          id = lib.mkOption {
-            type = t.str;
-          };
-          provider = lib.mkOption {
-            type = t.str;
-          };
-          source = lib.mkOption {
-            type = t.enum [ "env" ];
-          };
-        }; }) (t.submodule { options = {
-          id = lib.mkOption {
-            type = t.str;
-          };
-          provider = lib.mkOption {
-            type = t.str;
-          };
-          source = lib.mkOption {
-            type = t.enum [ "file" ];
-          };
-        }; }) (t.submodule { options = {
-          id = lib.mkOption {
-            type = t.str;
-          };
-          provider = lib.mkOption {
-            type = t.str;
-          };
-          source = lib.mkOption {
-            type = t.enum [ "exec" ];
-          };
-        }; }) ]) ]);
-          default = null;
-        };
         cacheTtlMinutes = lib.mkOption {
           type = t.nullOr (t.number);
           default = null;

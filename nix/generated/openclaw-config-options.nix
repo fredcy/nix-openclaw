@@ -1,4 +1,4 @@
-# Generated from upstream OpenClaw schema at rev 3e72c0352dde84a0bcb3aabafa99c2d4b12d1c46. DO NOT EDIT.
+# Generated from upstream OpenClaw schema at rev abe7b2c49da95a47fc0fc01661cec9bfed6941fc. DO NOT EDIT.
 # Generator: nix/scripts/generate-config-options.ts
 { lib }:
 let
@@ -153,6 +153,150 @@ in
         type = t.nullOr (t.int);
         default = null;
       };
+      cliBackends = lib.mkOption {
+        type = t.nullOr (t.attrsOf (t.submodule { options = {
+        args = lib.mkOption {
+          type = t.nullOr (t.listOf (t.str));
+          default = null;
+        };
+        clearEnv = lib.mkOption {
+          type = t.nullOr (t.listOf (t.str));
+          default = null;
+        };
+        command = lib.mkOption {
+          type = t.str;
+        };
+        env = lib.mkOption {
+          type = t.nullOr (t.attrsOf (t.str));
+          default = null;
+        };
+        imageArg = lib.mkOption {
+          type = t.nullOr (t.str);
+          default = null;
+        };
+        imageMode = lib.mkOption {
+          type = t.nullOr (t.oneOf [ (t.enum [ "repeat" ]) (t.enum [ "list" ]) ]);
+          default = null;
+        };
+        imagePathScope = lib.mkOption {
+          type = t.nullOr (t.oneOf [ (t.enum [ "temp" ]) (t.enum [ "workspace" ]) ]);
+          default = null;
+        };
+        input = lib.mkOption {
+          type = t.nullOr (t.oneOf [ (t.enum [ "arg" ]) (t.enum [ "stdin" ]) ]);
+          default = null;
+        };
+        maxPromptArgChars = lib.mkOption {
+          type = t.nullOr (t.int);
+          default = null;
+        };
+        modelAliases = lib.mkOption {
+          type = t.nullOr (t.attrsOf (t.str));
+          default = null;
+        };
+        modelArg = lib.mkOption {
+          type = t.nullOr (t.str);
+          default = null;
+        };
+        output = lib.mkOption {
+          type = t.nullOr (t.oneOf [ (t.enum [ "json" ]) (t.enum [ "text" ]) (t.enum [ "jsonl" ]) ]);
+          default = null;
+        };
+        reliability = lib.mkOption {
+          type = t.nullOr (t.submodule { options = {
+          watchdog = lib.mkOption {
+            type = t.nullOr (t.submodule { options = {
+            fresh = lib.mkOption {
+              type = t.nullOr (t.submodule { options = {
+              maxMs = lib.mkOption {
+                type = t.nullOr (t.int);
+                default = null;
+              };
+              minMs = lib.mkOption {
+                type = t.nullOr (t.int);
+                default = null;
+              };
+              noOutputTimeoutMs = lib.mkOption {
+                type = t.nullOr (t.int);
+                default = null;
+              };
+              noOutputTimeoutRatio = lib.mkOption {
+                type = t.nullOr (t.number);
+                default = null;
+              };
+            }; });
+              default = null;
+            };
+            resume = lib.mkOption {
+              type = t.nullOr (t.submodule { options = {
+              maxMs = lib.mkOption {
+                type = t.nullOr (t.int);
+                default = null;
+              };
+              minMs = lib.mkOption {
+                type = t.nullOr (t.int);
+                default = null;
+              };
+              noOutputTimeoutMs = lib.mkOption {
+                type = t.nullOr (t.int);
+                default = null;
+              };
+              noOutputTimeoutRatio = lib.mkOption {
+                type = t.nullOr (t.number);
+                default = null;
+              };
+            }; });
+              default = null;
+            };
+          }; });
+            default = null;
+          };
+        }; });
+          default = null;
+        };
+        resumeArgs = lib.mkOption {
+          type = t.nullOr (t.listOf (t.str));
+          default = null;
+        };
+        resumeOutput = lib.mkOption {
+          type = t.nullOr (t.oneOf [ (t.enum [ "json" ]) (t.enum [ "text" ]) (t.enum [ "jsonl" ]) ]);
+          default = null;
+        };
+        serialize = lib.mkOption {
+          type = t.nullOr (t.bool);
+          default = null;
+        };
+        sessionArg = lib.mkOption {
+          type = t.nullOr (t.str);
+          default = null;
+        };
+        sessionArgs = lib.mkOption {
+          type = t.nullOr (t.listOf (t.str));
+          default = null;
+        };
+        sessionIdFields = lib.mkOption {
+          type = t.nullOr (t.listOf (t.str));
+          default = null;
+        };
+        sessionMode = lib.mkOption {
+          type = t.nullOr (t.oneOf [ (t.enum [ "always" ]) (t.enum [ "existing" ]) (t.enum [ "none" ]) ]);
+          default = null;
+        };
+        systemPromptArg = lib.mkOption {
+          type = t.nullOr (t.str);
+          default = null;
+        };
+        systemPromptMode = lib.mkOption {
+          type = t.nullOr (t.oneOf [ (t.enum [ "append" ]) (t.enum [ "replace" ]) ]);
+          default = null;
+        };
+        systemPromptWhen = lib.mkOption {
+          type = t.nullOr (t.oneOf [ (t.enum [ "first" ]) (t.enum [ "always" ]) (t.enum [ "never" ]) ]);
+          default = null;
+        };
+      }; }));
+        default = null;
+      };
       compaction = lib.mkOption {
         type = t.nullOr (t.submodule { options = {
         customInstructions = lib.mkOption {
@@ -220,6 +364,10 @@ in
           type = t.nullOr (t.enum [ "off" "async" "await" ]);
           default = null;
         };
+        provider = lib.mkOption {
+          type = t.nullOr (t.str);
+          default = null;
+        };
         qualityGuard = lib.mkOption {
           type = t.nullOr (t.submodule { options = {
           enabled = lib.mkOption {
@@ -250,6 +398,10 @@ in
           default = null;
         };
       }; });
+        default = null;
+      };
+      contextInjection = lib.mkOption {
+        type = t.nullOr (t.oneOf [ (t.enum [ "always" ]) (t.enum [ "continuation-skip" ]) ]);
         default = null;
       };
       contextPruning = lib.mkOption {
@@ -392,6 +544,10 @@ in
           type = t.nullOr (t.bool);
           default = null;
         };
+        includeSystemPromptSection = lib.mkOption {
+          type = t.nullOr (t.bool);
+          default = null;
+        };
         isolatedSession = lib.mkOption {
           type = t.nullOr (t.bool);
           default = null;
@@ -486,6 +642,10 @@ in
       };
       maxConcurrent = lib.mkOption {
         type = t.nullOr (t.int);
+        default = null;
+      };
+      mediaGenerationAutoProviderFallback = lib.mkOption {
+        type = t.nullOr (t.bool);
         default = null;
       };
       mediaMaxMb = lib.mkOption {
@@ -1304,6 +1464,10 @@ in
       }; });
         default = null;
       };
+      systemPromptOverride = lib.mkOption {
+        type = t.nullOr (t.str);
+        default = null;
+      };
       thinkingDefault = lib.mkOption {
         type = t.nullOr (t.oneOf [ (t.enum [ "off" ]) (t.enum [ "minimal" ]) (t.enum [ "low" ]) (t.enum [ "medium" ]) (t.enum [ "high" ]) (t.enum [ "xhigh" ]) (t.enum [ "adaptive" ]) ]);
         default = null;
@@ -1415,6 +1579,10 @@ in
           default = null;
         };
         includeReasoning = lib.mkOption {
+          type = t.nullOr (t.bool);
+          default = null;
+        };
+        includeSystemPromptSection = lib.mkOption {
           type = t.nullOr (t.bool);
           default = null;
         };
@@ -2260,6 +2428,10 @@ in
           default = null;
         };
       }; });
+        default = null;
+      };
+      systemPromptOverride = lib.mkOption {
+        type = t.nullOr (t.str);
         default = null;
       };
       thinkingDefault = lib.mkOption {
@@ -4934,6 +5106,10 @@ in
             default = null;
           };
           requiresOpenAiAnthropicToolPayload = lib.mkOption {
+            type = t.nullOr (t.bool);
+            default = null;
+          };
+          requiresStringContent = lib.mkOption {
             type = t.nullOr (t.bool);
             default = null;
           };
